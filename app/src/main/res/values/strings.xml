@@ -3,4 +3,9 @@
     <string name="new_notebookelement_name_hint">Name</string>
     <string name="create">Create</string>
     <string name="cancel">Cancel</string>
+
+    <string-array name="notebookelement_types">
+        <item>Note</item>
+        <item>Directory</item>
+    </string-array>
 </resources>

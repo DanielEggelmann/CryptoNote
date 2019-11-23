@@ -8,15 +8,19 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 public class NewNotebookElementDialogFragment extends DialogFragment {
 
     private NewNotebookElementDialogListener mListener;
+
     private EditText edit_name;
+    private Spinner spinner_type;
 
     public interface NewNotebookElementDialogListener {
-        public void onDialogPositiveClick(DialogFragment dialog, String name);
+        public void onDialogPositiveClick(DialogFragment dialog, String name, int type);
         public void onDialogNegativeClick(DialogFragment dialog);
     }
 
@@ -27,12 +31,17 @@ public class NewNotebookElementDialogFragment extends DialogFragment {
         final LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_new_notebookelement, null);
         edit_name = view.findViewById(R.id.dialog_new_notebookelement_edit_name);
+        spinner_type = view.findViewById(R.id.dialog_new_notebookelement_spinner_type);
+
+        final ArrayAdapter<CharSequence> spinner_typeAdapter = ArrayAdapter.createFromResource(getActivity(), R.array.notebookelement_types, android.R.layout.simple_spinner_item);
+        spinner_typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner_type.setAdapter(spinner_typeAdapter);
 
         builder.setView(view)
                 .setPositiveButton(R.string.create, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        mListener.onDialogPositiveClick(NewNotebookElementDialogFragment.this, edit_name.getText().toString());
+                        mListener.onDialogPositiveClick(NewNotebookElementDialogFragment.this, edit_name.getText().toString(), spinner_type.getSelectedItemPosition());
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

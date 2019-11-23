@@ -3,6 +3,7 @@ package de.danieleggelmann.cryptonote;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import de.danieleggelmann.cryptonote.library.Notebook;
 import de.danieleggelmann.cryptonote.library.NotebookDirectory;
 import de.danieleggelmann.cryptonote.library.NotebookNote;
 import de.danieleggelmann.cryptonote.library.OperationFailedException;
@@ -92,17 +93,31 @@ public class NotebookActivity extends AppCompatActivity implements NewNotebookEl
     };
 
     @Override
-    public void onDialogPositiveClick(DialogFragment dialog, String name) {
+    public void onDialogPositiveClick(DialogFragment dialog, String name, int type) {
         if(mDatabaseServiceConnected) {
-            NotebookNote note = mDatabaseService.CreateNote(name);
-            try {
-                note.Save();
-                mDirectory.AddElement(note);
-                mDirectory.Save();
-                mDatabaseService.Save();
-            } catch (OperationFailedException e) {
-                e.printStackTrace();
+            if(type + 1 == NotebookNote.TYPE) {
+                NotebookNote note = mDatabaseService.CreateNote(name);
+                try {
+                    note.Save();
+                    mDirectory.AddElement(note);
+                    mDirectory.Save();
+                    mDatabaseService.Save();
+                } catch (OperationFailedException e) {
+                    e.printStackTrace();
+                }
             }
+            else {
+                NotebookDirectory directory = mDatabaseService.CreateDirectory(name);
+                try {
+                    directory.Save();
+                    mDirectory.AddElement(directory);
+                    mDirectory.Save();
+                    mDatabaseService.Save();
+                } catch (OperationFailedException e) {
+                    e.printStackTrace();
+                }
+            }
+
         }
     }
 
