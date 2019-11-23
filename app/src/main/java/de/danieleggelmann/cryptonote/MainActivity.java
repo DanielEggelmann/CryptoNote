@@ -1,6 +1,9 @@
 package de.danieleggelmann.cryptonote;
 
 import androidx.appcompat.app.AppCompatActivity;
+import de.danieleggelmann.cryptonote.library.NotebookDirectory;
+import de.danieleggelmann.cryptonote.library.NotebookNote;
+import de.danieleggelmann.cryptonote.library.OperationFailedException;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -58,16 +61,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if(mDatabaseServiceConnected)
             {
                 mDatabaseService.Login(edit_password.getText().toString());
-
-                for(int i = 0; i < 3; i++)
-                {
-                    Note note = mDatabaseService.GetNotebook().NewNote();
-                    note.SetTitle(String.valueOf(i));
-                    note.SetContent("");
-                    note.Save();
-                }
-
-                mDatabaseService.GetNotebook().Save();
 
                 Intent notebookIntent = new Intent(this, NotebookActivity.class);
                 startActivity(notebookIntent);

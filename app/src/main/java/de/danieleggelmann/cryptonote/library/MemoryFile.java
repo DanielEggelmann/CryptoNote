@@ -1,4 +1,4 @@
-package de.danieleggelmann.cryptonote;
+package de.danieleggelmann.cryptonote.library;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class MemoryFile {
-
-    private File mFile;
+	
+	private File mFile;
     private ByteBuffer mBuffer;
 
     public MemoryFile(File file) {
@@ -94,14 +94,59 @@ public class MemoryFile {
         mBuffer.position(0);
     }
 
-    public void Append(int position, byte[] content) {
+    public int Append(byte[] content) {
 
         byte[] bufferContent = mBuffer.array();
 
         mBuffer = ByteBuffer.allocate(bufferContent.length + content.length);
-        mBuffer.put(bufferContent);
+        mBuffer.put(bufferContent);       
+        int position = mBuffer.position();       
         mBuffer.put(content);
         mBuffer.position(0);
+        
+        return position;
+    }
+    
+    public void Remove(int position, int length) {
+    	
+    	if(position + length > mBuffer.limit()) {
+            throw new IndexOutOfBoundsException();
+        }
+    	
+    	byte[] before = new byte[position]; // bytes before the position
+        mBuffer.get(before);
+        byte[] after = new byte[mBuffer.limit() - (position + length)]; // bytes after the replaced content
+        mBuffer.position(position + length);
+        mBuffer.get(after);
+        
+        mBuffer = ByteBuffer.allocate(before.length + after.length);
+        mBuffer.put(before);
+        mBuffer.put(after);
+        mBuffer.position(0);
+    }
+    
+    public int ReadInteger(int position) {
+    	if(position + Integer.BYTES > mBuffer.limit())
+    		throw new IndexOutOfBoundsException();
+    	
+    	int value = mBuffer.getInt(position);
+    	mBuffer.position(0);
+    	
+    	return value;
+    }
+    
+    public short ReadShort(int position) {
+    	if(position + Short.BYTES > mBuffer.limit())
+    		throw new IndexOutOfBoundsException();
+    	
+    	short value = mBuffer.getShort(position);
+    	mBuffer.position(0);
+    	
+    	return value;
+    }
+    
+    public void Clear() {
+    	mBuffer = ByteBuffer.allocate(0);
     }
 
 }

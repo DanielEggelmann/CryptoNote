@@ -1,17 +1,17 @@
 package de.danieleggelmann.cryptonote;
 
 import android.view.LayoutInflater;
-import android.view.TextureView;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import de.danieleggelmann.cryptonote.library.NotebookDirectory;
+import de.danieleggelmann.cryptonote.library.NotebookElement;
+import de.danieleggelmann.cryptonote.library.OperationFailedException;
 
 public class NotebookRecyclerAdapter extends RecyclerView.Adapter<NotebookRecyclerAdapter.NotebookRecyclerViewHolder> {
 
-    private Notebook mNotebook;
+    private NotebookDirectory mDirectory;
 
     public static class NotebookRecyclerViewHolder extends RecyclerView.ViewHolder {
 
@@ -24,9 +24,9 @@ public class NotebookRecyclerAdapter extends RecyclerView.Adapter<NotebookRecycl
         }
     }
 
-    public NotebookRecyclerAdapter(Notebook notebook)
+    public NotebookRecyclerAdapter(NotebookDirectory directory)
     {
-        mNotebook = notebook;
+        mDirectory = directory;
     }
 
     @Override
@@ -39,19 +39,26 @@ public class NotebookRecyclerAdapter extends RecyclerView.Adapter<NotebookRecycl
 
     @Override
     public void onBindViewHolder(NotebookRecyclerViewHolder holder, int position) {
-        DatabaseElement element = mNotebook.GetContent()[position];
-        if(element.IsNotebook())
-        {
-            holder.textView.setText(element.ToNotebook().GetName());
+        NotebookElement element = null;
+        try {
+            element = mDirectory.GetElement(position);
+
+            holder.textView.setText(element.GetName());
+
+        } catch (OperationFailedException e) {
+            e.printStackTrace();
         }
-        else
-        {
-            holder.textView.setText(element.ToNote().GetTitle());
-        }
+
     }
 
     @Override
     public int getItemCount() {
-        return mNotebook.GetContent().length;
+        try {
+            return mDirectory.GetElementCount();
+        } catch (OperationFailedException e) {
+            e.printStackTrace();
+
+            return 0;
+        }
     }
 }
