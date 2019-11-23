@@ -4,7 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import de.danieleggelmann.cryptonote.library.NotebookDirectory;
+import de.danieleggelmann.cryptonote.library.NotebookNote;
+import de.danieleggelmann.cryptonote.library.OperationFailedException;
 
+import android.app.DialogFragment;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -12,11 +15,10 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.View;
-import android.widget.LinearLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class NotebookActivity extends AppCompatActivity {
+public class NotebookActivity extends AppCompatActivity implements NewNotebookElementDialogFragment.NewNotebookElementDialogListener {
 
     protected DatabaseService mDatabaseService;
     protected boolean mDatabaseServiceConnected;
@@ -76,7 +78,8 @@ public class NotebookActivity extends AppCompatActivity {
 
                 @Override
                 public void onClick(View view) {
-
+                    DialogFragment newNotebookElementDialog = new NewNotebookElementDialogFragment();
+                    newNotebookElementDialog.show(getFragmentManager(), "new_notebookelement");
                 }
             });
         }
@@ -87,4 +90,24 @@ public class NotebookActivity extends AppCompatActivity {
             mDirectory = null;
         }
     };
+
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog, String name) {
+        if(mDatabaseServiceConnected) {
+            NotebookNote note = mDatabaseService.CreateNote(name);
+            try {
+                note.Save();
+                mDirectory.AddElement(note);
+                mDirectory.Save();
+                mDatabaseService.Save();
+            } catch (OperationFailedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+
+    }
 }
